@@ -145,7 +145,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Dusman.cpp" />
+    <ClCompile Include="Karakter.cpp" />
     <ClCompile Include="maincpp.cpp" />
+    <ClCompile Include="Oyuncu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\SFML-2.5.1\bin\openal32.dll" />
@@ -159,6 +162,11 @@
     <None Include="..\SFML-2.5.1\bin\sfml-system-d-2.dll" />
     <None Include="..\SFML-2.5.1\bin\sfml-window-2.dll" />
     <None Include="..\SFML-2.5.1\bin\sfml-window-d-2.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Dusman.h" />
+    <ClInclude Include="Karakter.h" />
+    <ClInclude Include="Oyuncu.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

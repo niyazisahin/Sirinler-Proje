@@ -36,12 +36,6 @@ int main()
 		cout << "Gargamel yüklenmedi!";
 	}
 
-
-
-	sf::Texture textureSirine;
-	sf::Texture textureGargamel;
-
-
 	sf::Sprite spriteSirine(sirine);
 	spriteSirine.setScale(sf::Vector2f(0.1, 0.1));
 	
@@ -50,9 +44,6 @@ int main()
 
 
 	spriteSirine.setPosition(1090, 630);
-
-
-
 
 
 	char haritaDizi[11][13];
