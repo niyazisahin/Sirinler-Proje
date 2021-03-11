@@ -146,9 +146,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Dusman.cpp" />
+    <ClCompile Include="Gozluklu.cpp" />
     <ClCompile Include="Karakter.cpp" />
     <ClCompile Include="maincpp.cpp" />
     <ClCompile Include="Oyuncu.cpp" />
+    <ClCompile Include="Tembel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\SFML-2.5.1\bin\openal32.dll" />
@@ -165,8 +167,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dusman.h" />
+    <ClInclude Include="Gozluklu.h" />
     <ClInclude Include="Karakter.h" />
     <ClInclude Include="Oyuncu.h" />
+    <ClInclude Include="Tembel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

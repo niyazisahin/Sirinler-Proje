@@ -1,16 +1,10 @@
 #include "Karakter.h"
 
 int** Karakter::EnKýsaYol() {
-
+	return NULL;
 }
 
-void Karakter::KarakterResimYukle(sf::Texture texture) {
-
-	this->sprite.setTexture(texture);
-
-}
-
-void Karakter::SetPos(sf::Vector2f pos) {
+void Karakter::setPos(sf::Vector2f pos) {
 	this->pos = pos;
 }
 

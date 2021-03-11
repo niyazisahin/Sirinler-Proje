@@ -3,3 +3,5 @@
 int Oyuncu::PuaniGoster() {
 	return this->skor;
 }
+
+

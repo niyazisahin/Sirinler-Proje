@@ -1,14 +1,20 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <fstream>
+#include "Oyuncu.h"
+#include "Gozluklu.h"
 
 using namespace std;
 
 
+#define BASLANGICX 555 + 180
+#define BASLANGICY 360 + 90
+
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(1170, 990), "sirineyi Kurtar!");
+	sf::RenderWindow window(sf::VideoMode(1570, 990), "sirineyi Kurtar!");
 	sf::RectangleShape rect[143];
+
 
 	sf::Color black = sf::Color::Black;
 	sf::Color white = sf::Color::White;
@@ -24,28 +30,21 @@ int main()
 	//sf::Color gray = sf::Color(128, 128, 128);
 
 
-	sf::Texture sirine;
-	sf::Texture gargamel;
+	/* Texturelar */
+	sf::Texture texture_gozluklu;
 
-	if (!sirine.loadFromFile("sirine.png")) {
-		cout << "Sirine yüklenmedi";
+	if (!texture_gozluklu.loadFromFile("gozluklu.png")) {
+		cout << "Gozluklu yuklenemedi" << endl;
 	}
 
+	/* Oyuncu */
 
-	if (!gargamel.loadFromFile("gargamel.png")) {
-		cout << "Gargamel yüklenmedi!";
-	}
-
-	sf::Sprite spriteSirine(sirine);
-	spriteSirine.setScale(sf::Vector2f(0.1, 0.1));
+	Gozluklu gozluklu(0, "gozluklu", 0);
+	gozluklu.GetSprite()->setPosition(BASLANGICX, BASLANGICY);
+	gozluklu.GetSprite()->setScale(sf::Vector2f(0.18, 0.18));
+	gozluklu.GetSprite()->setTexture(texture_gozluklu);
 	
-	sf::Sprite spriteGargamel(gargamel);
-	spriteGargamel.setScale(sf::Vector2f(0.1, 0.1));
-
-
-	spriteSirine.setPosition(1090, 630);
-
-
+	/* Harita Jenerasyonu */
 	char haritaDizi[11][13];
 	int ix = 0;
 	int jx = 0;
@@ -53,12 +52,8 @@ int main()
 	fstream fin("harita.txt", fstream::in);
 	while (fin >> noskipws >> ch) {
 
-		//cout << ch; // Or whatever
-
-
 		if (ch == '1' || ch == '0') {
 			/*continue;*/
-
 
 			haritaDizi[ix][jx] = ch;
 
@@ -66,7 +61,6 @@ int main()
 
 			if (ix == 10 && jx == 12)
 				break;
-
 
 			if (jx == 12)
 			{
@@ -78,7 +72,6 @@ int main()
 			jx = jx % 13;
 		}
 
-
 	}
 	cout << "\n\n";
 
@@ -89,6 +82,8 @@ int main()
 		cout << "\n";
 	}
 
+
+	/* Game Loop */
 	while (window.isOpen()) {
 		sf::Event event;
 		while (window.pollEvent(event)) {
@@ -96,11 +91,10 @@ int main()
 				window.close();
 		}
 
-		window.clear();
+		window.clear(white); // Ekran bufferýný beyaz yap
 
-
-		float x = 0, y = 0;
-
+		/* Küp baþlangýç kordinatlarý */
+		float x = 200, y = 0;
 		int sayac = 0;
 
 		for (int i = 0; i < 11; i++) {
@@ -115,29 +109,31 @@ int main()
 
 					rect[sayac].setFillColor(gray);
 				}
+
+				/* Küplerin Ayarlanmasý */
 				rect[sayac].setSize(sf::Vector2f(90, 90));
 				rect[sayac].setPosition(x, y);
+				rect[sayac].setOutlineColor(black);
+				rect[sayac].setOutlineThickness(1.0f);
+
+				/* Pencereye çizmek */
 				window.draw(rect[sayac]);
 				sayac++;
 				x += 90;
 			}
 			y += 90;
-			x = 0;
+			x = 200;
 
 		}
+
 		// Baþlangýç noktasý (mavi)
 		rect[71].setFillColor(blue);
-		window.draw(rect[71]);
 
-		window.draw(spriteSirine);
-		window.draw(spriteGargamel);
+		/* Drawing objects */
+		window.draw(rect[71]);
+		window.draw(*(gozluklu.GetSprite()));
+
 		window.display();
-		int adim = 90;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-		{
-			// left key is pressed: move our character
-			spriteSirine.setPosition(1090-adim, 630);
-		}
 
 	}
 

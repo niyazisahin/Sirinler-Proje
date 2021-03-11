@@ -27,6 +27,12 @@
     <ClCompile Include="Dusman.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Gozluklu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tembel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\SFML-2.5.1\bin\openal32.dll">
@@ -71,6 +77,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Dusman.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gozluklu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tembel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
