@@ -6,5 +6,6 @@ int** Karakter::EnKýsaYol() {
 
 void Karakter::setPos(sf::Vector2f pos) {
 	this->pos = pos;
+	this->GetSprite()->setPosition(this->pos);
 }
 

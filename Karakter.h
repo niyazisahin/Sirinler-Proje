@@ -30,8 +30,8 @@ public:
 	int getId() { return this->id; }
 	string getAd() { return this->ad; }
 	string getTur() { return this->tur; }
-	sf::Vector2f GetPos() { return pos; }
-	sf::Sprite* GetSprite() { return sprite; }
+	sf::Vector2f GetPos() { return pos; } // g küçük
+	sf::Sprite* GetSprite() { return sprite; } // g küçük
 	int getHiz() { return this->hiz; }
 
 	/* Setters */
