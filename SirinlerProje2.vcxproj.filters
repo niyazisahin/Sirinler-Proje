@@ -33,6 +33,12 @@
     <ClCompile Include="Tembel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Gargamel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Azman.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\SFML-2.5.1\bin\openal32.dll">
@@ -83,6 +89,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tembel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gargamel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Azman.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

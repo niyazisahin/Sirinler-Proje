@@ -4,25 +4,18 @@ class Dusman :
     public Karakter
 {
 private:
-	int dusmanId;
-	string dusmanAd;
-	string dusmanTur;
+	int hiz;
 
 public:
-	int PuaniGoster();
+	Dusman(int _id, string _ad, string _tur, int _hiz) : Karakter(_id, _ad, _tur) {
+		this->hiz = _hiz;
+	}
 
-	/* Getters */
-	int getOyuncuId() { return this->dusmanId; }
-	string getOyuncuAd() { return this->dusmanAd; }
-	string getOyuncuTur() { return this->dusmanTur; }
+	Dusman() : Karakter()
+	{
 
+	}
 
-
-
-	/* Setters */
-	void setDusmanId(int dusmanId) { this->dusmanId = dusmanId; }
-	void setOyuncuAd(string dusmanAd) { this->dusmanAd = dusmanAd; }
-	void setOyuncuTur(string dusmanTur) { this->dusmanTur = dusmanTur; }
 
 };
 

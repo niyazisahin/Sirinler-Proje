@@ -3,6 +3,10 @@
 #include <fstream>
 #include "Oyuncu.h"
 #include "Gozluklu.h"
+#include "Gargamel.h"
+#include "Azman.h"
+#include <string.h>
+#include <map>
 
 using namespace std;
 
@@ -49,6 +53,8 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(2 * KENAR_BOSLUK + 13 * KUP_BOYUT, 2 * KENAR_BOSLUK + 11 * KUP_BOYUT), "sirineyi Kurtar!");
 	sf::RectangleShape rect[143];
 
+	Dusman duzman_dizi[2];
+
 	bool flag_left  = true;
 	bool flag_right = true;
 	bool flag_up    = true;
@@ -65,8 +71,13 @@ int main()
 	sf::Color transparent = sf::Color::Transparent;
 	sf::Color gray = sf::Color(128, 128, 128);
 	sf::Color pink = sf::Color(255, 192, 203);
-	//sf::Color gray = sf::Color(128, 128, 128);
 
+	map<char, sf::Vector2f> dusman_pozisyon = {
+	{ 'A', sf::Vector2f(KENAR_BOSLUK + 3 * KUP_BOYUT, KENAR_BOSLUK) },
+	{ 'B', sf::Vector2f(KENAR_BOSLUK + 10 * KUP_BOYUT, KENAR_BOSLUK) },
+	{ 'C', sf::Vector2f(KENAR_BOSLUK, KENAR_BOSLUK + 6 * KUP_BOYUT) },
+	{ 'D', sf::Vector2f(KENAR_BOSLUK + 3 * KUP_BOYUT, ALT_BORDER) }
+	};
 
 	/* Texturelar */
 	sf::Texture texture_gozluklu;
@@ -75,19 +86,91 @@ int main()
 		cout << "Gozluklu yuklenemedi" << endl;
 	}
 
+	sf::Texture texture_gargamel;
+
+	if (!texture_gargamel.loadFromFile("gargamel.png")) {
+		cout << "Gargamel yuklenemedi" << endl;
+	}
+
+	sf::Texture texture_azman;
+
+	if (!texture_azman.loadFromFile("azman.png")) {
+		cout << "azman yuklenemedi" << endl;
+	}
+
 	/* Oyuncu */
 	Gozluklu gozluklu(0, "gozluklu", 0);
-	gozluklu.GetSprite()->setPosition(BASLANGICX, BASLANGICY);
 	gozluklu.setPos(sf::Vector2f(BASLANGICX, BASLANGICY));
 	gozluklu.GetSprite()->setScale(sf::Vector2f(0.14, 0.14));
 	gozluklu.GetSprite()->setTexture(texture_gozluklu);
-	
+
 	/* Harita Jenerasyonu */
 	char haritaDizi[11][13];
 	int ix = 0;
 	int jx = 0;
+	int sayac = 0;
 	char ch;
+
 	fstream fin("harita.txt", fstream::in);
+	while ((char)fin.peek() != '0' && (char)fin.peek() != '1') {
+
+		string m; // raw veri
+		getline(fin, m);
+		int flag = 0;
+
+		/* Dosyadan okunacak veri */
+		string veri;
+	
+		for (char x : m) {
+			
+			/* Kelime Atla */
+			if (x != ':' && flag == 0)
+				continue;
+			else
+				flag = 1;
+
+			if (x == ','){
+				flag = 0;
+				continue;
+			}
+
+			if(x != ':')
+				veri += x;
+
+		}
+
+		/* Dusman bilgileri */
+		char karakter_tip = veri[0];
+		char pozisyon = veri[veri.length() - 1];
+
+		cout << veri << endl;
+		cout << karakter_tip << ':' << pozisyon << endl;
+
+		switch (karakter_tip) {
+
+			case 'A' : 
+			{
+				Azman azman(sayac+1, "azman");
+				azman.setPos(dusman_pozisyon[pozisyon]);
+				azman.GetSprite()->setScale(sf::Vector2f(0.15, 0.15));
+				azman.GetSprite()->setTexture(texture_azman);
+				duzman_dizi[sayac++] = azman;
+			}
+			break;
+
+			case 'G' :
+			{
+				Gargamel gargamel(sayac+1, "gargamel");
+				gargamel.setPos(dusman_pozisyon[pozisyon]);
+				gargamel.GetSprite()->setScale(sf::Vector2f(0.035, 0.035));
+				gargamel.GetSprite()->setTexture(texture_gargamel);
+				duzman_dizi[sayac++] = gargamel;
+			}
+			break;
+
+		}
+	}
+
 	while (fin >> noskipws >> ch) {
 
 		if (ch == '1' || ch == '0') {
@@ -247,9 +330,13 @@ int main()
 		/* Drawing objects */
 		window.draw(rect[71]);
 		window.draw(*(gozluklu.GetSprite()));
+		
+		/* Dusmanlarý ciz */
+		for (auto dusman : duzman_dizi) {
+			window.draw(*(dusman.GetSprite()));
+		}
 
 		window.display();
-
 
 
 	}
