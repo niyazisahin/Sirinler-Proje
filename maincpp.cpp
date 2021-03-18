@@ -7,6 +7,7 @@
 #include "Azman.h"
 #include <string.h>
 #include <map>
+#include "Tembel.h"
 
 using namespace std;
 
@@ -47,6 +48,17 @@ bool border_kontrol(sf::Vector2f pos, char harita[11][13]) {
 	return true;
 }
 
+sf::Texture Texture_Yukle(string texture_isim) {
+
+	sf::Texture m;
+
+	if (!m.loadFromFile(texture_isim)) {
+		cout << texture_isim << " yuklenemedi" << endl;
+	}
+
+	return m;
+}
+
 
 int main()
 {
@@ -80,29 +92,34 @@ int main()
 	};
 
 	/* Texturelar */
-	sf::Texture texture_gozluklu;
+	sf::Texture texture_gozluklu = Texture_Yukle("gozluklu.png");
+	sf::Texture texture_tembel = Texture_Yukle("tembel.png");
+	sf::Texture texture_gargamel = Texture_Yukle("gargamel.png");
+	sf::Texture texture_azman = Texture_Yukle("azman.png");
+	sf::Texture texture_sirine = Texture_Yukle("sirine.png");
 
-	if (!texture_gozluklu.loadFromFile("gozluklu.png")) {
-		cout << "Gozluklu yuklenemedi" << endl;
-	}
+	/* Karakter Seçimi */
+	
+	sf::Texture texture_gozluklu_b = Texture_Yukle("gozluklu1.png");
+	sf::Texture texture_tembel_b = Texture_Yukle("tembel1.png");
 
-	sf::Texture texture_gargamel;
+	sf::Sprite gozluklu_buton(texture_gozluklu_b);
+	sf::Sprite tembel_buton(texture_tembel_b);
+	sf::Sprite sirine(texture_sirine);
 
-	if (!texture_gargamel.loadFromFile("gargamel.png")) {
-		cout << "Gargamel yuklenemedi" << endl;
-	}
+	tembel_buton.setPosition(sf::Vector2f(SOL_BORDER - 40, UST_BORDER));
+	gozluklu_buton.setPosition(sf::Vector2f(SAG_BORDER - 472, UST_BORDER));
+	sirine.setPosition(sf::Vector2f(SAG_BORDER + 10 , ALT_BORDER - KUP_BOYUT * 4));
 
-	sf::Texture texture_azman;
+	tembel_buton.setScale(2, 2);
+	gozluklu_buton.setScale(2, 2);
+	sirine.setScale(0.1, 0.1);
 
-	if (!texture_azman.loadFromFile("azman.png")) {
-		cout << "azman yuklenemedi" << endl;
-	}
+	sf::FloatRect gb_bounds = gozluklu_buton.getGlobalBounds();
+	sf::FloatRect tb_bounds = tembel_buton.getGlobalBounds();
 
 	/* Oyuncu */
-	Gozluklu gozluklu(0, "gozluklu", 0);
-	gozluklu.setPos(sf::Vector2f(BASLANGICX, BASLANGICY));
-	gozluklu.GetSprite()->setScale(sf::Vector2f(0.14, 0.14));
-	gozluklu.GetSprite()->setTexture(texture_gozluklu);
+	Oyuncu oyuncu(0, "oyuncu", "oyuncu" , 0);
 
 	/* Harita Jenerasyonu */
 	char haritaDizi[11][13];
@@ -203,15 +220,120 @@ int main()
 		cout << "\n";
 	}
 
+	////////////////Dosyadan Okuma Bitiþ///////////////
+
+	/// ////////////Küplerin Ekrana Çizimi/////////////
+	/* Küp baþlangýç kordinatlarý */
+	float x = KENAR_BOSLUK, y = KENAR_BOSLUK;
+	sayac = 0;
+
+	for (int i = 0; i < 11; i++) {
+
+		for (int j = 0; j < 13; j++) {
+
+			if (haritaDizi[i][j] == '1')
+			{
+				rect[sayac].setFillColor(white);
+			}
+			else {
+
+				rect[sayac].setFillColor(gray);
+			}
+
+			/* Küplerin Ayarlanmasý */
+			rect[sayac].setSize(sf::Vector2f(KUP_BOYUT, KUP_BOYUT));
+			rect[sayac].setPosition(x, y);
+			rect[sayac].setOutlineColor(black);
+			rect[sayac].setOutlineThickness(1.0f);
+
+			/* Pencereye çizmek */
+			sayac++;
+			x += KUP_BOYUT;
+		}
+		y += KUP_BOYUT;
+		x = KENAR_BOSLUK;
+
+	}
+	/// ////////////////////////////////////////
+	
+	// karakter seçimi kontrol
+	bool oyun_baslama_flag = false;
+
 	/* Game Loop */
 	while (window.isOpen()) {
+
 		sf::Event event;
+		
 		while (window.pollEvent(event)) {
+
+			/*Buton Kontrol*/
+			if (event.type == sf::Event::MouseButtonPressed)
+			{
+				if (event.mouseButton.button == sf::Mouse::Left && !oyun_baslama_flag)
+				{
+					int x = event.mouseButton.x, y = event.mouseButton.y;
+				
+					cout << "mouse x: " << x << endl;
+					cout << "mouse y: " << y << endl;				
+					
+					if (gb_bounds.contains( sf::Vector2f(x,y)) ) {
+						Gozluklu gozluklu(0, "gozluklu", 0);
+						gozluklu.setPos(sf::Vector2f(BASLANGICX, BASLANGICY));
+						gozluklu.GetSprite()->setTexture(texture_gozluklu);
+						gozluklu.GetSprite()->setScale(0.15, 0.15);
+						oyuncu = gozluklu;
+						oyun_baslama_flag = true;
+					}
+
+					if (tb_bounds.contains(sf::Vector2f(x, y))) {
+						Tembel tembel(1, "tembel", 0);
+						tembel.setPos(sf::Vector2f(BASLANGICX, BASLANGICY));
+						tembel.GetSprite()->setTexture(texture_tembel);
+						tembel.GetSprite()->setScale(0.08, 0.07);
+						oyuncu = tembel;
+						oyun_baslama_flag = true;
+					}
+
+				}
+			}
+
 			if (event.type == sf::Event::Closed)
 				window.close();
+
 		}
 
 		window.clear(white); // Ekran bufferýný beyaz yap
+		
+
+		if (!oyun_baslama_flag){
+
+			/* Butonlar */
+			window.draw(gozluklu_buton);
+			window.draw(tembel_buton);
+		
+		}
+		else {
+
+			/* Harita ciz*/
+			for (auto r : rect)
+				window.draw(r);
+
+			/* Oyuncu ciz*/
+			window.draw(*(oyuncu.GetSprite()));
+			
+			/* Sirine ciz*/
+			window.draw(sirine);
+
+			/* Dusmanlarý ciz */
+			for (auto dusman : duzman_dizi)
+				window.draw(*(dusman.GetSprite()));
+
+		}
+
+		window.display();
+
+		if (!oyun_baslama_flag)
+			continue;
 
 
 		/* Keyboard input */
@@ -224,11 +346,14 @@ int main()
 		if (left && flag_left) {
 
 			// yürüceði pozisyon
-			sf::Vector2f gelecek_pos = gozluklu.GetPos() + sf::Vector2f(-ADIM_X, 0);
+			for (int i = 1; i < oyuncu.getHiz() + 1; i++) {
+				// yürüceði pozisyon
+				sf::Vector2f gelecek_pos = oyuncu.GetPos() + sf::Vector2f(-ADIM_X, 0);
 
-			if (border_kontrol(gelecek_pos, haritaDizi))
-				gozluklu.setPos(gelecek_pos);
+				if (border_kontrol(gelecek_pos, haritaDizi))
+					oyuncu.setPos(gelecek_pos);
 
+			}
 			cout << "sol tusa tiklandi" << endl;
 			flag_left = false;
 
@@ -236,15 +361,18 @@ int main()
 			flag_left = true;
 		/// ///////////////////////////////////////////////
 
-
+				
 		/// ///////////////////RIGHT/////////////////////////
 		if (right && flag_right) {
 
-			// yürüceði pozisyon
-			sf::Vector2f gelecek_pos = gozluklu.GetPos() + sf::Vector2f(ADIM_X, 0);
+			for (int i = 1; i < oyuncu.getHiz() + 1; i++) {
+				// yürüceði pozisyon
+				sf::Vector2f gelecek_pos = oyuncu.GetPos() + sf::Vector2f(ADIM_X, 0);
 
-			if (border_kontrol(gelecek_pos, haritaDizi))
-				gozluklu.setPos(gelecek_pos);
+				if (border_kontrol(gelecek_pos, haritaDizi))
+					oyuncu.setPos(gelecek_pos);
+				
+			}
 
 			cout << "sag tusa tiklandi" << endl;
 			flag_right = false;
@@ -259,10 +387,14 @@ int main()
 		if (up && flag_up) {
 
 			// yürüceði pozisyon
-			sf::Vector2f gelecek_pos = gozluklu.GetPos() + sf::Vector2f(0, -ADIM_Y);
+			for (int i = 1; i < oyuncu.getHiz() + 1; i++) {
+				// yürüceði pozisyon
+				sf::Vector2f gelecek_pos = oyuncu.GetPos() + sf::Vector2f(0, -ADIM_Y);
 
-			if (border_kontrol(gelecek_pos, haritaDizi))
-				gozluklu.setPos(gelecek_pos);
+				if (border_kontrol(gelecek_pos, haritaDizi))
+					oyuncu.setPos(gelecek_pos);
+
+			}
 
 			cout << "yukari tusa tiklandi" << endl;
 
@@ -277,11 +409,15 @@ int main()
 		if (down && flag_down) {
 
 			// yürüceði pozisyon
-			sf::Vector2f gelecek_pos = gozluklu.GetPos() + sf::Vector2f(0, ADIM_Y);
+			for (int i = 1; i < oyuncu.getHiz() + 1; i++) {
+				// yürüceði pozisyon
+				sf::Vector2f gelecek_pos = oyuncu.GetPos() + sf::Vector2f(0, ADIM_Y);
 
-			if (border_kontrol(gelecek_pos, haritaDizi))
-				gozluklu.setPos(gelecek_pos);
+				if (border_kontrol(gelecek_pos, haritaDizi))
+					oyuncu.setPos(gelecek_pos);
 
+			}
+			
 			cout << "asagi tusa tiklandi" << endl;
 
 			flag_down = false;
@@ -289,55 +425,6 @@ int main()
 		else if (!down && !flag_down)
 			flag_down = true;
 		/// ///////////////////////////////////////////////
-
-
-		/* Küp baþlangýç kordinatlarý */
-		float x = KENAR_BOSLUK, y = KENAR_BOSLUK;
-		int sayac = 0;
-
-		for (int i = 0; i < 11; i++) {
-
-			for (int j = 0; j < 13; j++) {
-
-				if (haritaDizi[i][j] == '1')
-				{
-					rect[sayac].setFillColor(white);
-				}
-				else {
-
-					rect[sayac].setFillColor(gray);
-				}
-
-				/* Küplerin Ayarlanmasý */
-				rect[sayac].setSize(sf::Vector2f(KUP_BOYUT, KUP_BOYUT));
-				rect[sayac].setPosition(x, y);
-				rect[sayac].setOutlineColor(black);
-				rect[sayac].setOutlineThickness(1.0f);
-
-				/* Pencereye çizmek */
-				window.draw(rect[sayac]);
-				sayac++;
-				x += KUP_BOYUT;
-			}
-			y += KUP_BOYUT;
-			x = KENAR_BOSLUK;
-
-		}
-
-		// Baþlangýç noktasý (mavi)
-		rect[71].setFillColor(blue);
-
-		/* Drawing objects */
-		window.draw(rect[71]);
-		window.draw(*(gozluklu.GetSprite()));
-		
-		/* Dusmanlarý ciz */
-		for (auto dusman : duzman_dizi) {
-			window.draw(*(dusman.GetSprite()));
-		}
-
-		window.display();
-
 
 	}
 
