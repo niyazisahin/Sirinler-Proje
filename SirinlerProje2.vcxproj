@@ -145,12 +145,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Altın.cpp" />
     <ClCompile Include="Azman.cpp" />
     <ClCompile Include="Dusman.cpp" />
     <ClCompile Include="Gargamel.cpp" />
     <ClCompile Include="Gozluklu.cpp" />
     <ClCompile Include="Karakter.cpp" />
     <ClCompile Include="maincpp.cpp" />
+    <ClCompile Include="Mantar.cpp" />
+    <ClCompile Include="Obje.cpp" />
     <ClCompile Include="Oyuncu.cpp" />
     <ClCompile Include="Tembel.cpp" />
   </ItemGroup>
@@ -168,11 +171,14 @@
     <None Include="..\SFML-2.5.1\bin\sfml-window-d-2.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Altın.h" />
     <ClInclude Include="Azman.h" />
     <ClInclude Include="Dusman.h" />
     <ClInclude Include="Gargamel.h" />
     <ClInclude Include="Gozluklu.h" />
     <ClInclude Include="Karakter.h" />
+    <ClInclude Include="Mantar.h" />
+    <ClInclude Include="Obje.h" />
     <ClInclude Include="Oyuncu.h" />
     <ClInclude Include="Tembel.h" />
   </ItemGroup>

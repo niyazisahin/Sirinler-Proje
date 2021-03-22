@@ -7,10 +7,15 @@
 #include "Azman.h"
 #include <string.h>
 #include <map>
+#include <vector>
 #include "Tembel.h"
+#include "Mantar.h"
+#include "Altýn.h"
+#include <time.h>
 
 using namespace std;
 
+/* Makrolar */
 #define KENAR_BOSLUK 100
 
 #define SAG_BORDER 13 * KUP_BOYUT + KENAR_BOSLUK
@@ -26,6 +31,30 @@ using namespace std;
 #define BASLANGICX 6 * KUP_BOYUT + KENAR_BOSLUK
 #define BASLANGICY 5 * KUP_BOYUT + KENAR_BOSLUK
 
+/* Obje listeleri */
+vector<Mantar> mantarListesi;
+vector<Altýn>  altýnListesi;
+ 
+/* Global texturelar */
+sf::Texture texture_mantar;
+sf::Texture texture_altin;
+
+int mantar_saniye = 0;
+int altin_saniye = 0;
+
+/* Spritelar üst üste geliyor mu kontrol fonksiyonu */
+bool sprite_cakýsma(sf::Sprite* s1, sf::Sprite* s2) {
+	
+	sf::Vector2f pos1 = s1->getPosition();
+	sf::Vector2f pos2 = s2->getPosition();
+
+	int x1 = (int)( pos1.x / ADIM_X);
+	int x2 = (int)( pos2.x / ADIM_X);
+	int y1 = (int)( pos1.y / ADIM_Y);
+	int y2 = (int)( pos2.y / ADIM_Y);
+
+	return (x1 == x2) && (y1 == y2);
+}
 
 bool border_kontrol(sf::Vector2f pos, char harita[11][13]) {
 
@@ -59,11 +88,50 @@ sf::Texture Texture_Yukle(string texture_isim) {
 	return m;
 }
 
+/* Yeni mantar üretilmesi fonksiyonu */
+void yeniMantar(char harita[11][13]) {
+	
+	int x = 0, y = 0;
+
+	do{
+		x = rand() % 13;
+		y = rand() % 11;
+	} while (harita[y][x] == '0');
+
+	Mantar yenimantar(0, "mantar", sf::Vector2f(SOL_BORDER + x * KUP_BOYUT, UST_BORDER + y * KUP_BOYUT));
+	
+	yenimantar.getSprite()->setTexture(texture_mantar);
+	mantarListesi.push_back(yenimantar);
+
+}
+
+/* Yeni altýn üretme fonksiyonu */
+void yeniAltin(char harita[11][13]) {
+
+	int x = 0, y = 0;
+
+	do {
+		x = rand() % 13;
+		y = rand() % 11;
+	} while (harita[y][x] == '0');
+
+	Altýn yeniAltin(0, "altin", sf::Vector2f(SOL_BORDER + x * KUP_BOYUT, UST_BORDER + y * KUP_BOYUT));
+
+	yeniAltin.getSprite()->setTexture(texture_altin);
+	altýnListesi.push_back(yeniAltin);
+
+}
+
+
 
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(2 * KENAR_BOSLUK + 13 * KUP_BOYUT, 2 * KENAR_BOSLUK + 11 * KUP_BOYUT), "sirineyi Kurtar!");
 	sf::RectangleShape rect[143];
+
+	sf::Clock clock;
+
+	srand((unsigned)time(NULL));
 
 	Dusman duzman_dizi[2];
 
@@ -97,6 +165,8 @@ int main()
 	sf::Texture texture_gargamel = Texture_Yukle("gargamel.png");
 	sf::Texture texture_azman = Texture_Yukle("azman.png");
 	sf::Texture texture_sirine = Texture_Yukle("sirine.png");
+	texture_mantar = Texture_Yukle("mantar.png");
+	texture_altin = Texture_Yukle("altin.png");
 
 	/* Karakter Seçimi */
 	
@@ -255,7 +325,7 @@ int main()
 
 	}
 	/// ////////////////////////////////////////
-	
+
 	// karakter seçimi kontrol
 	bool oyun_baslama_flag = false;
 
@@ -328,6 +398,12 @@ int main()
 			for (auto dusman : duzman_dizi)
 				window.draw(*(dusman.GetSprite()));
 
+			for (auto mantar : mantarListesi)
+				window.draw(*(mantar.getSprite()));
+
+			for (auto altin : altýnListesi)
+				window.draw(*(altin.getSprite()));
+
 		}
 
 		window.display();
@@ -335,6 +411,51 @@ int main()
 		if (!oyun_baslama_flag)
 			continue;
 
+		/* Mantar saniye azaltýlmasý */
+		if (mantar_saniye <= 0) {
+			mantar_saniye = rand() % 16 + 5;
+			yeniMantar(haritaDizi);
+		}
+
+		/* Altýn saniye azaltýlmasý */
+		if (altin_saniye <= 0) {
+			altin_saniye = rand() % 8 + 3;
+
+			for (int i = 0; i < 5; i++)
+				yeniAltin(haritaDizi);
+
+		}
+
+		/* Altýn ve mantarlarýn süreleri dolduysa silme iþlemi */
+		if (clock.getElapsedTime() > sf::seconds(1)) {
+			mantar_saniye--;
+			altin_saniye--;
+
+			int counter = 0;
+			for (auto &mantar : mantarListesi) {
+				mantar.sure_azalt();
+				
+				if (mantar.olum_suresi <= 0) {
+					mantarListesi.erase(mantarListesi.begin() + counter);
+				}
+				counter++;
+			}
+
+			
+			counter = 0;
+			for (auto &altin : altýnListesi) {
+				altin.sure_azalt();
+				
+				if (altin.olum_suresi <= 0) {
+					altýnListesi.erase(altýnListesi.begin() + counter);
+					counter = -1;
+				}
+				counter++;
+			}
+
+
+			clock.restart();
+		}
 
 		/* Keyboard input */
 		bool left = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
@@ -425,6 +546,33 @@ int main()
 		else if (!down && !flag_down)
 			flag_down = true;
 		/// ///////////////////////////////////////////////
+
+		/* Mantarlarýn üzerine gelindiðinde altýnlarýn yok olmasý */
+		int counter = 0;
+		for (auto mantar : mantarListesi) {
+			
+			if (sprite_cakýsma(mantar.getSprite(), oyuncu.GetSprite())) {
+				oyuncu.setOyuncuSkor(oyuncu.getOyuncuSkor() + mantar.getPuan());
+				cout << "Oyuncu Skoru : " << oyuncu.PuaniGoster() << endl;
+				mantarListesi.erase(mantarListesi.begin() + counter);
+			}
+
+			counter++;
+		}
+
+		/* Altýnlarýn üzerine gelindiðinde altýnlarýn yok olmasý */
+		counter = 0;
+		for (auto altin : altýnListesi) {
+
+			if (sprite_cakýsma(altin.getSprite(), oyuncu.GetSprite())) {
+				oyuncu.setOyuncuSkor(oyuncu.getOyuncuSkor() + altin.getPuan());
+				cout << "Oyuncu Skoru : " << oyuncu.PuaniGoster() << endl;
+				altýnListesi.erase(altýnListesi.begin() + counter);
+				counter = -1;
+			}
+
+			counter++;
+		}
 
 	}
 

@@ -39,6 +39,15 @@
     <ClCompile Include="Azman.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Obje.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Altın.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mantar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\SFML-2.5.1\bin\openal32.dll">
@@ -95,6 +104,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Azman.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Obje.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Altın.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mantar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
