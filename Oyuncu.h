@@ -16,7 +16,7 @@ public:
 		this->skor = 0;
 	}
 
-	int PuaniGoster();
+	void PuaniGoster(sf::RenderWindow* puan_ekrani);
 
 	/* Getters */
 	int getOyuncuSkor() { return this->skor; }

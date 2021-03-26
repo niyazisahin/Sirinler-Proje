@@ -1,10 +1,17 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <SFML/Graphics.hpp>
 
 using namespace std;
 
-#include <SFML/Graphics.hpp>
+struct blok {
+	int x;
+	int y;
+	int dist;
+	struct blok* parent;
+};
 
 class Karakter
 {
@@ -42,7 +49,7 @@ public:
 	void setHiz(int hiz) { this->hiz = hiz; }
 
 
-	int** EnKýsaYol(); // (0,1)(0,2)
+	struct blok* EnKýsaYol(char harita[11][13], sf::Vector2f hedefPos, vector<sf::Vector2f> dusman_liste); // (0,1)(0,2)
 
 };
 

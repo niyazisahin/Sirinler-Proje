@@ -31,6 +31,9 @@ using namespace std;
 #define BASLANGICX 6 * KUP_BOYUT + KENAR_BOSLUK
 #define BASLANGICY 5 * KUP_BOYUT + KENAR_BOSLUK
 
+#define BITIS_X 12
+#define BITIS_Y 7
+
 /* Obje listeleri */
 vector<Mantar> mantarListesi;
 vector<Altýn>  altýnListesi;
@@ -133,7 +136,7 @@ int main()
 
 	srand((unsigned)time(NULL));
 
-	Dusman duzman_dizi[2];
+	vector<Dusman> duzman_dizi;
 
 	bool flag_left  = true;
 	bool flag_right = true;
@@ -151,12 +154,13 @@ int main()
 	sf::Color transparent = sf::Color::Transparent;
 	sf::Color gray = sf::Color(128, 128, 128);
 	sf::Color pink = sf::Color(255, 192, 203);
+	sf::Color transparent_green = sf::Color(0, 255, 0, 125);
 
 	map<char, sf::Vector2f> dusman_pozisyon = {
 	{ 'A', sf::Vector2f(KENAR_BOSLUK + 3 * KUP_BOYUT, KENAR_BOSLUK) },
 	{ 'B', sf::Vector2f(KENAR_BOSLUK + 10 * KUP_BOYUT, KENAR_BOSLUK) },
-	{ 'C', sf::Vector2f(KENAR_BOSLUK, KENAR_BOSLUK + 6 * KUP_BOYUT) },
-	{ 'D', sf::Vector2f(KENAR_BOSLUK + 3 * KUP_BOYUT, ALT_BORDER) }
+	{ 'C', sf::Vector2f(KENAR_BOSLUK, KENAR_BOSLUK + 5 * KUP_BOYUT) },
+	{ 'D', sf::Vector2f(KENAR_BOSLUK + 3 * KUP_BOYUT, ALT_BORDER -KUP_BOYUT) }
 	};
 
 	/* Texturelar */
@@ -165,6 +169,10 @@ int main()
 	sf::Texture texture_gargamel = Texture_Yukle("gargamel.png");
 	sf::Texture texture_azman = Texture_Yukle("azman.png");
 	sf::Texture texture_sirine = Texture_Yukle("sirine.png");
+
+	sf::Texture texture_win = Texture_Yukle("win.png");
+	sf::Texture texture_lose = Texture_Yukle("lose.png");
+
 	texture_mantar = Texture_Yukle("mantar.png");
 	texture_altin = Texture_Yukle("altin.png");
 
@@ -176,10 +184,15 @@ int main()
 	sf::Sprite gozluklu_buton(texture_gozluklu_b);
 	sf::Sprite tembel_buton(texture_tembel_b);
 	sf::Sprite sirine(texture_sirine);
+	sf::Sprite win(texture_win);
+	sf::Sprite lose(texture_lose);
 
 	tembel_buton.setPosition(sf::Vector2f(SOL_BORDER - 40, UST_BORDER));
 	gozluklu_buton.setPosition(sf::Vector2f(SAG_BORDER - 472, UST_BORDER));
 	sirine.setPosition(sf::Vector2f(SAG_BORDER + 10 , ALT_BORDER - KUP_BOYUT * 4));
+	win.setPosition(sf::Vector2f(350 ,400));
+	lose.setPosition(sf::Vector2f(350 ,400));
+
 
 	tembel_buton.setScale(2, 2);
 	gozluklu_buton.setScale(2, 2);
@@ -241,7 +254,8 @@ int main()
 				azman.setPos(dusman_pozisyon[pozisyon]);
 				azman.GetSprite()->setScale(sf::Vector2f(0.15, 0.15));
 				azman.GetSprite()->setTexture(texture_azman);
-				duzman_dizi[sayac++] = azman;
+				azman.setHiz(1);
+				duzman_dizi.push_back(azman);
 			}
 			break;
 
@@ -251,7 +265,8 @@ int main()
 				gargamel.setPos(dusman_pozisyon[pozisyon]);
 				gargamel.GetSprite()->setScale(sf::Vector2f(0.035, 0.035));
 				gargamel.GetSprite()->setTexture(texture_gargamel);
-				duzman_dizi[sayac++] = gargamel;
+				gargamel.setHiz(2);
+				duzman_dizi.push_back(gargamel);
 			}
 			break;
 
@@ -327,7 +342,9 @@ int main()
 	/// ////////////////////////////////////////
 
 	// karakter seçimi kontrol
-	bool oyun_baslama_flag = false;
+	bool oyun_baslama_flag   = false;
+	bool oyun_kazandýn_flag  = false;
+	bool oyun_kaybettin_flag = false;
 
 	/* Game Loop */
 	while (window.isOpen()) {
@@ -339,6 +356,8 @@ int main()
 			/*Buton Kontrol*/
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
+
+
 				if (event.mouseButton.button == sf::Mouse::Left && !oyun_baslama_flag)
 				{
 					int x = event.mouseButton.x, y = event.mouseButton.y;
@@ -347,7 +366,7 @@ int main()
 					cout << "mouse y: " << y << endl;				
 					
 					if (gb_bounds.contains( sf::Vector2f(x,y)) ) {
-						Gozluklu gozluklu(0, "gozluklu", 0);
+						Gozluklu gozluklu(0, "gozluklu", 20);
 						gozluklu.setPos(sf::Vector2f(BASLANGICX, BASLANGICY));
 						gozluklu.GetSprite()->setTexture(texture_gozluklu);
 						gozluklu.GetSprite()->setScale(0.15, 0.15);
@@ -356,13 +375,14 @@ int main()
 					}
 
 					if (tb_bounds.contains(sf::Vector2f(x, y))) {
-						Tembel tembel(1, "tembel", 0);
+						Tembel tembel(1, "tembel", 20);
 						tembel.setPos(sf::Vector2f(BASLANGICX, BASLANGICY));
 						tembel.GetSprite()->setTexture(texture_tembel);
 						tembel.GetSprite()->setScale(0.08, 0.07);
 						oyuncu = tembel;
 						oyun_baslama_flag = true;
 					}
+
 
 				}
 			}
@@ -373,7 +393,6 @@ int main()
 		}
 
 		window.clear(white); // Ekran bufferýný beyaz yap
-		
 
 		if (!oyun_baslama_flag){
 
@@ -406,10 +425,56 @@ int main()
 
 		}
 
+		
+		if (oyun_baslama_flag) {
+
+			vector<sf::Vector2f> gargamel_pozlarý;
+			for (auto dusman : duzman_dizi) {
+				if (dusman.getTur() == "gargamel") {
+
+					sf::Vector2f goreceli_pos = dusman.GetPos() - sf::Vector2f(KENAR_BOSLUK, KENAR_BOSLUK);
+					int x = (int)(goreceli_pos.x / ADIM_X);
+					int y = (int)(goreceli_pos.y / ADIM_Y);
+
+					gargamel_pozlarý.push_back(sf::Vector2f(x,y));
+				}
+			}
+
+			for (auto dusman : duzman_dizi) {
+
+				struct blok* tmp = dusman.EnKýsaYol(haritaDizi, oyuncu.GetPos(), gargamel_pozlarý);
+				if(tmp != nullptr){
+					while (tmp->parent != NULL) {
+
+						sf::RectangleShape rect;
+						rect.setPosition(sf::Vector2f(tmp->x * KUP_BOYUT + SOL_BORDER, tmp->y * KUP_BOYUT + UST_BORDER));
+						rect.setFillColor(transparent_green);
+						rect.setSize(sf::Vector2f(KUP_BOYUT, KUP_BOYUT));
+						window.draw(rect);
+						tmp = tmp->parent;
+					}
+				}
+			}
+		}
+
+		if(oyun_baslama_flag)
+			oyuncu.PuaniGoster(&window);
+
+		if (oyun_kazandýn_flag) {
+			window.clear(white);
+			window.draw(win);
+		}
+		
+		if (oyun_kaybettin_flag) {
+			window.clear(white);
+			window.draw(lose);
+		}
+
 		window.display();
 
-		if (!oyun_baslama_flag)
+		if (!oyun_baslama_flag || oyun_kazandýn_flag || oyun_kaybettin_flag)
 			continue;
+
 
 		/* Mantar saniye azaltýlmasý */
 		if (mantar_saniye <= 0) {
@@ -463,6 +528,8 @@ int main()
 		bool up = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
 		bool down = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
 
+		bool moved = false;
+
 		/// ///////////////////LEFT////////////////////////
 		if (left && flag_left) {
 
@@ -477,6 +544,7 @@ int main()
 			}
 			cout << "sol tusa tiklandi" << endl;
 			flag_left = false;
+			moved = true;
 
 		} else if (!left && !flag_left)
 			flag_left = true;
@@ -497,6 +565,7 @@ int main()
 
 			cout << "sag tusa tiklandi" << endl;
 			flag_right = false;
+			moved = true;
 
 		}
 		else if (!right && !flag_right)
@@ -520,6 +589,7 @@ int main()
 			cout << "yukari tusa tiklandi" << endl;
 
 			flag_up = false;
+			moved = true;
 		}
 		else if (!up && !flag_up)
 			flag_up = true;
@@ -542,10 +612,61 @@ int main()
 			cout << "asagi tusa tiklandi" << endl;
 
 			flag_down = false;
+			moved = true;
 		}
 		else if (!down && !flag_down)
 			flag_down = true;
 		/// ///////////////////////////////////////////////
+
+		if (moved) {
+
+			vector<sf::Vector2f> gargamel_pozlarý;
+			for (auto dusman : duzman_dizi) {
+				if (dusman.getTur() == "gargamel") {
+
+					sf::Vector2f goreceli_pos = dusman.GetPos() - sf::Vector2f(KENAR_BOSLUK, KENAR_BOSLUK);
+					int x = (int)(goreceli_pos.x / ADIM_X);
+					int y = (int)(goreceli_pos.y / ADIM_Y);
+
+					gargamel_pozlarý.push_back(sf::Vector2f(x, y));
+				}
+			}
+
+			for (auto& dusman : duzman_dizi) {
+				struct blok* tmp = dusman.EnKýsaYol(haritaDizi, oyuncu.GetPos(), gargamel_pozlarý);
+
+				if(tmp != nullptr){
+					if (tmp->parent != NULL) {
+						while (tmp->parent->parent != NULL) {
+
+							if (dusman.getHiz() == 2 && tmp->parent->parent->parent == NULL) {
+								break;
+							}
+
+							tmp = tmp->parent;
+						}
+						dusman.setPos(sf::Vector2f(tmp->x * KUP_BOYUT + SOL_BORDER, tmp->y * KUP_BOYUT + UST_BORDER));
+					}
+				}
+
+				if (sprite_cakýsma(dusman.GetSprite(), oyuncu.GetSprite())) {
+					oyuncu.setOyuncuSkor(oyuncu.getOyuncuSkor() - 15);
+				}
+			}
+		}
+
+		sf::Vector2f goreceli_pos = oyuncu.GetPos() - sf::Vector2f(KENAR_BOSLUK, KENAR_BOSLUK);
+		int x = (int)(goreceli_pos.x / ADIM_X);
+		int y = (int)(goreceli_pos.y / ADIM_Y);
+
+		if (x == BITIS_X && y == BITIS_Y)
+			oyun_kazandýn_flag = true;
+		
+		if (oyuncu.getOyuncuSkor() <= 0) {
+			oyuncu.setOyuncuSkor(0); // oyun tekrar baþlatýlýrsa eksi gözükmemesi
+			oyun_kaybettin_flag = true;
+		}
+		
 
 		/* Mantarlarýn üzerine gelindiðinde altýnlarýn yok olmasý */
 		int counter = 0;
@@ -553,7 +674,7 @@ int main()
 			
 			if (sprite_cakýsma(mantar.getSprite(), oyuncu.GetSprite())) {
 				oyuncu.setOyuncuSkor(oyuncu.getOyuncuSkor() + mantar.getPuan());
-				cout << "Oyuncu Skoru : " << oyuncu.PuaniGoster() << endl;
+				cout << "Oyuncu Skoru : " << oyuncu.getOyuncuSkor() << endl;
 				mantarListesi.erase(mantarListesi.begin() + counter);
 			}
 
@@ -566,7 +687,7 @@ int main()
 
 			if (sprite_cakýsma(altin.getSprite(), oyuncu.GetSprite())) {
 				oyuncu.setOyuncuSkor(oyuncu.getOyuncuSkor() + altin.getPuan());
-				cout << "Oyuncu Skoru : " << oyuncu.PuaniGoster() << endl;
+				cout << "Oyuncu Skoru : " << oyuncu.getOyuncuSkor() << endl;
 				altýnListesi.erase(altýnListesi.begin() + counter);
 				counter = -1;
 			}
